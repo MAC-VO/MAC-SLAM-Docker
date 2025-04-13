@@ -1,0 +1,23 @@
+services:
+  dev:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: yutianchen/macslam:apr2025-v1
+    container_name: dev-macslam
+    gpus: all
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    volumes:
+      - "${PROJ_DIR:-~/Documents/MAC-SLAM}:/home/devuser/workspace:rw"
+      - "${DATA_DIR:-/media/yutianch/Data/Dataset}:/data:rw"
+      - "${CKPT_DIR:-/media/yutianch/Data/MAC-SLAM/Model}:/home/devuser/workspace/Model:rw"
+      - "${RESULT_DIR:-/media/yutianch/Data/MAC-SLAM/Results}:/home/devuser/workspace/Results:rw"
+    ports:
+      - "9876:9876"  # Rerun
+      - "9877:9877"  # 
+      - "9090:9090"  # 
+    command: bash
+    tty: true
+    stdin_open: true
+    user: "root"
