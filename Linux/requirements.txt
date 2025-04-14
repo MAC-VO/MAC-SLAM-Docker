@@ -18,3 +18,4 @@ scipy
 flow_vis
 onnx
 pyright
+jaxtyping
