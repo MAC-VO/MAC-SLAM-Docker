@@ -7,17 +7,13 @@ RUN apt-get update && apt-get install -y \
     vim \
     && rm -rf /var/lib/apt/lists/*
 
-
-# Create a non-root user for better security (optional but recommended)
-RUN groupadd -r devgroup && useradd -m -r -g devgroup devuser
-
 # Set up the working directory
-WORKDIR /home/devuser/workspace
+WORKDIR /home/root/workspace
 
 COPY requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt && rm /tmp/requirements.txt
 
-USER devuser
+USER root
 
 # Expose rerun visualization ports
 EXPOSE 9876 9877 9090
