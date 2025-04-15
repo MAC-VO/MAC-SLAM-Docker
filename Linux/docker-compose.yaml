@@ -19,3 +19,14 @@ services:
     tty: true
     stdin_open: true
     user: "root"
+
+  github-action:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: yutianchen/macslam:github-action
+    container_name: github-action-macslam
+    environment:
+      - CI=true
+    command: bash
+    user: "root"
