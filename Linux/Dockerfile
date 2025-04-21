@@ -12,6 +12,7 @@ WORKDIR /home/root/workspace
 
 COPY requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt && rm /tmp/requirements.txt
+RUN git config --global --add safe.directory '*'
 
 USER root
 

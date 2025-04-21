@@ -20,3 +20,4 @@ onnx
 pyright
 jaxtyping
 typeguard==2.13.3
+kornia
