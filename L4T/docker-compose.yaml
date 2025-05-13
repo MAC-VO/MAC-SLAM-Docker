@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     image: yutianchen/macslam:may2025-v1-l4t
     container_name: dev-macslam
-    gpus: all
+    runtime: nvidia
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
     ports:

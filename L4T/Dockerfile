@@ -10,7 +10,14 @@ RUN apt-get update && apt-get install -y \
 # Set up the working directory
 WORKDIR /home/root/workspace
 
-COPY ../Linux/requirements.txt /tmp/requirements.txt
+# Install HDF5 dependency for SLAM keyframe storage and data persistent storage.
+RUN apt-get update && apt-get install -y \
+    libhdf5-dev \
+    libhdf5-serial-dev \
+    hdf5-tools \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY ./requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt && rm /tmp/requirements.txt
 RUN git config --global --add safe.directory '*'
 
