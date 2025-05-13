@@ -1,0 +1,18 @@
+services:
+  l4t:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: yutianchen/macslam:may2025-v1-l4t
+    container_name: dev-macslam
+    gpus: all
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    ports:
+      - "9876:9876"  # Rerun
+      - "9877:9877"  # 
+      - "9090:9090"  # 
+    command: bash
+    tty: true
+    stdin_open: true
+    user: "root"
