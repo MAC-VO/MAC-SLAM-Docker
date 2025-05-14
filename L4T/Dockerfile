@@ -55,6 +55,11 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt && rm /tmp/requirements.
 # Configure Git
 RUN git config --global --add safe.directory '*'
 
+# Install tmux for terminal multiplexing
+RUN apt-get update && apt-get install -y tmux &&\
+    sudo apt install -y ros-humble-rmw-cyclonedds-cpp &&\
+    rm -rf /var/lib/apt/lists/*
+
 # Expose ports for visualization tools
 EXPOSE 9876 9877 9090
 

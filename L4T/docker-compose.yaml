@@ -11,12 +11,14 @@ services:
     volumes:
       - /home/airlab/workspace:/home/root/workspace:rw
     
-    network_mode: "host" 
+    network_mode: "host"
+    ipc: "host"
+    shm_size: "1g"
 
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
-      - ROS_DOMAIN_ID=0
-      - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+      - ROS_DOMAIN_ID=91
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     
     command: bash
     tty: true
