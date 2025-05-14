@@ -1,5 +1,6 @@
 pypose == 0.6.8
-opencv-python-headless
+# NOTE: This will overshadow the CUDA-enabled opencv provided in L4T image.
+# opencv-python-headless
 evo
 matplotlib
 tabulate

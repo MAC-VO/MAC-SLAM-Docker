@@ -3,15 +3,21 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile
+    
     image: yutianchen/macslam:may2025-v1-l4t
     container_name: dev-macslam
     runtime: nvidia
+
+    volumes:
+      - /home/airlab/workspace:/home/root/workspace:rw
+    
+    network_mode: "host" 
+
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
-    ports:
-      - "9876:9876"  # Rerun
-      - "9877:9877"  # 
-      - "9090:9090"  # 
+      - ROS_DOMAIN_ID=0
+      - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+    
     command: bash
     tty: true
     stdin_open: true
