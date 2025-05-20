@@ -33,8 +33,13 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt && rm /tmp/requirements.
 RUN git config --global --add safe.directory '*'
 
 # Install tmux for terminal multiplexing
-RUN apt-get update && apt-get install -y tmux &&\
+RUN apt-get update && apt-get install -y tmux zstd &&\
     rm -rf /var/lib/apt/lists/*
+
+# Install Zed SDK
+RUN wget -O ./zed_sdk.run https://download.stereolabs.com/zedsdk/4.2/l4t36.4/jetsons && \
+    chmod +x ./zed_sdk.run && \
+    ./zed_sdk.run -- silent runtime_only skip_od_module skip_hub skip_tools
 
 # Expose ports for visualization tools
 EXPOSE 9876 9877 9090
