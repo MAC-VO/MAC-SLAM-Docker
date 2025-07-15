@@ -30,3 +30,17 @@ services:
       - CI=true
     command: bash
     user: "root"
+
+  pyright-check:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: yutianchen/macslam:github-action
+    container_name: pyright-macslam
+    environment:
+      - CI=true
+    volumes:
+      - "${PROJ_DIR:-~/Documents/MAC/MAC-SLAM}:/home/devuser/workspace:rw"
+    working_dir: /home/devuser/workspace
+    command: ["pyright"]
+    user: "root"
