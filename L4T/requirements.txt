@@ -24,3 +24,4 @@ typeguard==2.13.3
 kornia
 loguru
 h5py
+huggingface-hub

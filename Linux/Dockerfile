@@ -12,6 +12,12 @@ WORKDIR /home/root/workspace
 
 COPY requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt && rm /tmp/requirements.txt
+
+# Install uniception package, use --no-deps to avoid installing dependencies that may conflict
+# with the existing environment
+RUN pip install uniception --no-deps 
+
+# Configure Git
 RUN git config --global --add safe.directory '*'
 
 USER root
