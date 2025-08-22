@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     
-    image: yutianchen/macslam:aug2025-v1-l4t
+    image: yutianchen/macslam:aug2025-v1-l4t-thor
     container_name: dev-macslam
     runtime: nvidia
 

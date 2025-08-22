@@ -1,0 +1,27 @@
+pypose == 0.6.8
+# NOTE: This will overshadow the CUDA-enabled opencv provided in L4T image.
+# opencv-python-headless
+evo
+matplotlib
+tabulate
+tqdm
+rich
+cupy-cuda12x
+einops
+timm==0.9.12
+rerun-sdk==0.21.0
+yacs
+numpy<2.0.0
+pyyaml
+wandb
+pillow
+scipy
+flow_vis
+onnx
+pyright
+jaxtyping
+typeguard==2.13.3
+kornia
+loguru
+h5py
+huggingface-hub

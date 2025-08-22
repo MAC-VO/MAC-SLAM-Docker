@@ -1,0 +1,26 @@
+services:
+  l4t:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    
+    image: yutianchen/macslam:aug2025-v1-l4t-orin
+    container_name: dev-macslam
+    runtime: nvidia
+
+    volumes:
+      - /home/airlab/workspace:/home/root/workspace:rw
+    
+    network_mode: "host"
+    ipc: "host"
+    shm_size: "1g"
+
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - ROS_DOMAIN_ID=91
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    
+    command: bash
+    tty: true
+    stdin_open: true
+    user: "root"
