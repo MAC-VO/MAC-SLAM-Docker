@@ -9,7 +9,7 @@ services:
     runtime: nvidia
 
     volumes:
-      - /home/airlab/workspace:/home/root/workspace:rw
+      - "${PROJ_DIR:-/home/airlab/workspace}:/home/root/workspace:rw"
     
     network_mode: "host"
     ipc: "host"

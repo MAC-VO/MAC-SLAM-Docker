@@ -48,4 +48,6 @@ RUN wget -O ./zed_sdk.run https://download.stereolabs.com/zedsdk/4.2/l4t36.4/jet
 # Expose ports for visualization tools
 EXPOSE 9876 9877 9090
 
+WORKDIR /home/root/workspace
+
 CMD ["bash"]

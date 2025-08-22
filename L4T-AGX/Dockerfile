@@ -45,6 +45,8 @@ RUN wget -O ./zed_sdk.run https://download.stereolabs.com/zedsdk/4.2/l4t36.4/jet
     chmod +x ./zed_sdk.run && \
     ./zed_sdk.run -- silent runtime_only skip_od_module skip_hub skip_tools
 
+WORKDIR /home/root/workspace
+
 # Expose ports for visualization tools
 EXPOSE 9876 9877 9090
 

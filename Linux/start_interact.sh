@@ -2,7 +2,7 @@
 
 # Script to start interactive Docker container with optional host directory mounting
 # Usage: ./start_interact.sh [HOST_DIRECTORY]
-# If HOST_DIRECTORY is provided, it will be mounted to /home/root/workspace in the container
+# If HOST_DIRECTORY is provided, it will be mounted to /home/devuser/workspace in the container
 
 HOST_DIR="$1"
 
@@ -16,13 +16,10 @@ if [ -n "$HOST_DIR" ]; then
         exit 1
     fi
     
-    echo "Mounting host directory: $HOST_DIR -> /home/root/workspace"
-    # Export environment variable for docker-compose to use
-    export PROJ_DIR="$HOST_DIR"
+    echo "Mounting host directory: $HOST_DIR -> /home/devuser/workspace"
     # Use environment variable override for volume mounting
-    PROJ_DIR="$HOST_DIR" docker compose run --rm --service-ports l4t bash
+    PROJ_DIR="$HOST_DIR" docker compose run --rm --service-ports dev bash
 else
     echo "Using default volume mount from docker-compose.yaml"
-    docker compose run --rm --service-ports l4t bash
+    docker compose run --rm --service-ports dev bash
 fi
-

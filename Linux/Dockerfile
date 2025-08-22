@@ -20,7 +20,8 @@ RUN pip install uniception --no-deps
 # Configure Git
 RUN git config --global --add safe.directory '*'
 
-USER root
+# Set up the working directory
+WORKDIR /home/devuser/workspace
 
 # Expose rerun visualization ports
 EXPOSE 9876 9877 9090
