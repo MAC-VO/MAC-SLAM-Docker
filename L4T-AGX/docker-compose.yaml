@@ -6,10 +6,12 @@ services:
     
     image: yutianchen/macslam:aug2025-v1-l4t-orin
     container_name: dev-macslam
+    hostname: mac-dev-container
     runtime: nvidia
 
     volumes:
       - "${PROJ_DIR:-/home/airlab/workspace}:/home/root/workspace:rw"
+      - "${DATA_DIR:-/home/airlab/Data}:/Data:rw"
     
     network_mode: "host"
     ipc: "host"
