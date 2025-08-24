@@ -1,6 +1,6 @@
 pypose == 0.6.8
 # NOTE: This will overshadow the CUDA-enabled opencv provided in L4T image.
-# opencv-python-headless
+opencv-python-headless
 evo
 matplotlib
 tabulate
@@ -8,8 +8,7 @@ tqdm
 rich
 cupy-cuda12x
 einops
-timm==0.9.12
-rerun-sdk==0.21.0
+rerun-sdk
 yacs
 numpy<2.0.0
 pyyaml

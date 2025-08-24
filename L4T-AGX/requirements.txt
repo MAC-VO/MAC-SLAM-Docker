@@ -8,8 +8,7 @@ tqdm
 rich
 cupy-cuda12x
 einops
-timm==0.9.12
-rerun-sdk==0.21.0
+rerun-sdk
 yacs
 numpy<2.0.0
 pyyaml
