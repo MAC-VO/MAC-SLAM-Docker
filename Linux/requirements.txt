@@ -23,3 +23,6 @@ kornia
 loguru
 h5py
 huggingface-hub
+safetensors
+pybind11_stubgen
+tensorrt

@@ -3,7 +3,7 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile
-    image: yutianchen/macslam:aug2025-v2
+    image: yutianchen/macslam:oct2025-v1
     container_name: dev-macslam
     hostname: mac-dev-container
     gpus: all
