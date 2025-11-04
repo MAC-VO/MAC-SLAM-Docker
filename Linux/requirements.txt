@@ -5,7 +5,7 @@ matplotlib
 tabulate
 tqdm
 rich
-rerun-sdk==0.23.4
+rerun-sdk==0.26.0
 yacs
 numpy
 pyyaml
