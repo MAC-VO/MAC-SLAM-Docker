@@ -1,4 +1,4 @@
-FROM thor_pytroch_container:25.08-py3-base
+FROM nvcr.io/nvidia/pytorch:25.10-py3
 
 # Set environment variables to avoid interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
@@ -7,16 +7,9 @@ ENV TZ=Etc/UTC
 # Install development tools and libraries
 RUN apt-get update && apt-get install -y \
     build-essential \
-    git \
-    vim \
-    libhdf5-dev \
-    libhdf5-serial-dev \
-    hdf5-tools \
-    curl \
-    gnupg2 \
-    lsb-release \
-    locales \
-    tzdata \
+    git vim usbutils \
+    wget tmux zstd curl \
+    locales tzdata \
     && rm -rf /var/lib/apt/lists/*
 
 # Source ROS 2 setup script
@@ -37,13 +30,13 @@ RUN pip install uniception --no-deps
 RUN git config --global --add safe.directory '*'
 
 # Install tmux for terminal multiplexing
-RUN apt-get update && apt-get install -y tmux zstd &&\
+RUN apt-get update && apt-get install -y tmux zstd wget &&\
     rm -rf /var/lib/apt/lists/*
 
 # Install Zed SDK
-RUN wget -O ./zed_sdk.run https://download.stereolabs.com/zedsdk/4.2/l4t36.4/jetsons && \
+RUN wget -O ./zed_sdk.run https://download.stereolabs.com/zedsdk/5.1/l4t38.2/jetsons && \
     chmod +x ./zed_sdk.run && \
-    ./zed_sdk.run -- silent runtime_only skip_od_module skip_hub skip_tools
+    ./zed_sdk.run -- silent runtime_only skip_tools skip_od_module
 
 # Expose ports for visualization tools
 EXPOSE 9876 9877 9090
