@@ -3,12 +3,16 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile
-    image: yutianchen/macslam:aug2025-v2
+      args:
+        BASE_IMAGE: pytorch/pytorch:2.8.0-cuda12.8-cudnn9-devel
+    
+    image: yutianchen/macslam:nov2025-v1
     container_name: dev-macslam
     hostname: mac-dev-container
     runtime: nvidia
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
+      - CI=false
     volumes:
       - "${PROJ_DIR:-/home/gihwan/mac-vo/MACSLAM-internal}:/home/devuser/workspace:rw"
       - "${DATA_DIR:-/home/gihwan/mac-vo/data}:/Data:rw"
@@ -25,25 +29,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        BASE_IMAGE: pytorch/pytorch:2.8.0-cuda12.8-cudnn9-runtime
+    
     image: yutianchen/macslam:github-action
     container_name: github-action-macslam
     environment:
       - CI=true
     command: bash
-    user: "root"
-
-  pyright-check:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: yutianchen/macslam:github-action
-    container_name: pyright-macslam
-    environment:
-      - CI=true
-    volumes:
-      - "${PROJ_DIR:-~/Documents/MAC/MAC-SLAM}:/home/devuser/workspace:rw"
-    working_dir: /home/devuser/workspace
-    command: ["pyright"]
     user: "root"
   
   trt-dev:

@@ -1,16 +1,17 @@
-pypose == 0.6.8
-# NOTE: This will overshadow the CUDA-enabled opencv provided in L4T image.
-opencv-python-headless
+# --extra-index-url https://download.pytorch.org/whl/cu130
+# torch
+# torchvision
+pypose
+
 evo
+opencv-python-headless
 matplotlib
 tabulate
 tqdm
 rich
-cupy-cuda12x
-einops
 rerun-sdk
 yacs
-numpy<2.0.0
+numpy
 pyyaml
 wandb
 pillow
