@@ -1,0 +1,46 @@
+# ---- Stage 1: TensorR image (CUDA 12.8 / TRT 10.9) ----
+FROM nvcr.io/nvidia/tensorrt:25.03-py3 AS trt
+
+# trtexec
+RUN set -eux; \
+    for CAND in /usr/local/bin/trtexec /usr/src/tensorrt/bin/trtexec /opt/tensorrt/bin/trtexec; do \
+        if [ -x "$CAND" ]; then cp -v "$CAND" /tmp/trtexec; break; fi; \
+    done; \
+    test -f /tmp/trtexec
+
+# TensorRT runtime, CUDA compat lib
+RUN set -eux; mkdir -p /tmp/trtlibs /tmp/compat; \
+    cp -v /usr/lib/x86_64-linux-gnu/libnvinfer*        /tmp/trtlibs/ || true; \
+    cp -v /usr/lib/x86_64-linux-gnu/libnvonnxparser*   /tmp/trtlibs/ || true; \
+    cp -v /usr/lib/x86_64-linux-gnu/libnvinfer_plugin* /tmp/trtlibs/ || true; \
+    cp -vr /usr/local/cuda/compat/*                    /tmp/compat/  || true
+
+# ---- Stage 2: base image ----
+FROM yutianchen/macslam:aug2025-v2
+WORKDIR /home/devuser/workspace
+
+# TensorRT runtime + trtexec
+COPY --from=trt /tmp/trtlibs/ /usr/lib/x86_64-linux-gnu/
+COPY --from=trt /tmp/trtexec  /usr/local/bin/trtexec
+RUN chmod +x /usr/local/bin/trtexec
+
+# TensorRT Python binding
+# Remove previous TensorRT python
+RUN python -m pip uninstall -y tensorrt nvidia-tensorrt-cu12x nvidia-cudnn-cu12x || true
+RUN pip install tensorrt-cu12==10.9.0.34
+
+# ★ Model Optimizer + ONNX Runtime 
+# Python 3.10–3.12, CUDA>=12, PyTorch>=2.6, TensorRT>=10 
+RUN pip install -U "nvidia-modelopt[all]" onnxruntime-gpu==1.22.*  \
+ && python -c "import modelopt.torch.quantization.extensions as ext; ext.precompile()"
+
+
+# ★ CUDA compat copy + LD_LIBRARY_PATH
+COPY --from=trt /tmp/compat/ /usr/local/cuda/compat/
+ENV LD_LIBRARY_PATH=/usr/local/cuda/compat:/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH}
+ENV PATH=/usr/local/bin:${PATH}
+
+
+
+
+CMD ["bash"]

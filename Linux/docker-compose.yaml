@@ -6,12 +6,12 @@ services:
     image: yutianchen/macslam:aug2025-v2
     container_name: dev-macslam
     hostname: mac-dev-container
-    gpus: all
+    runtime: nvidia
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
     volumes:
-      - "${PROJ_DIR:-~/Documents/MAC-SLAM}:/home/devuser/workspace:rw"
-      - "${DATA_DIR:-/media/yutianch/Data}:/Data:rw"
+      - "${PROJ_DIR:-/home/gihwan/mac-vo/MACSLAM-internal}:/home/devuser/workspace:rw"
+      - "${DATA_DIR:-/home/gihwan/mac-vo/data}:/Data:rw"
     ports:
       - "9876:9876"  # Rerun
       - "9877:9877"  # 
@@ -20,7 +20,7 @@ services:
     tty: true
     stdin_open: true
     user: "root"
-
+  
   github-action:
     build:
       context: .
@@ -44,4 +44,22 @@ services:
       - "${PROJ_DIR:-~/Documents/MAC/MAC-SLAM}:/home/devuser/workspace:rw"
     working_dir: /home/devuser/workspace
     command: ["pyright"]
+    user: "root"
+  
+  trt-dev:
+    build: 
+      context: .
+      dockerfile: Dockerfile.trt-from-dev
+      args:
+        TRT_TAG: 25.03-py3
+    image: gihwan/macslam-trt:3090Ti-local
+    container_name: dev-macslam-trt
+    hostname: mac-dev-trt-container
+    runtime: nvidia
+    volumes:
+      - "${PROJ_DIR:-/home/gihwan/mac-vo/MACSLAM-internal}:/home/devuser/workspace:rw"
+      - "${DATA_DIR:-/home/gihwan/mac-vo/data}:/Data:rw"
+    command: bash
+    tty: true
+    stdin_open: true
     user: "root"
