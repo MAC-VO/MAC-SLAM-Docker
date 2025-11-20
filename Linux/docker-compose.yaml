@@ -6,7 +6,7 @@ services:
       args:
         BASE_IMAGE: pytorch/pytorch:2.8.0-cuda12.8-cudnn9-devel
     
-    image: yutianchen/macslam:nov2025-v1
+    image: yutianchen/macslam:nov2025-v2
     container_name: dev-macslam
     hostname: mac-dev-container
     runtime: nvidia
@@ -45,7 +45,7 @@ services:
       dockerfile: Dockerfile.trt-from-dev
       args:
         TRT_TAG: 25.03-py3
-    image: gihwan/macslam-trt:3090Ti-local
+    image: yutianchen/macslam:nov2025-v2-trt
     container_name: dev-macslam-trt
     hostname: mac-dev-trt-container
     runtime: nvidia

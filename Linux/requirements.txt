@@ -22,3 +22,4 @@ loguru
 h5py
 huggingface-hub
 safetensors
+omegaconf

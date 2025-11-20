@@ -25,3 +25,4 @@ kornia
 loguru
 h5py
 huggingface-hub
+omegaconf
