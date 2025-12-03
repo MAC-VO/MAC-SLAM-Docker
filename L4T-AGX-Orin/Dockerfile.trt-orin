@@ -1,0 +1,67 @@
+# This Dockerfile is based on L4T-AGX/Docerfile & Linux/3090Ti/Dockerfile
+
+
+# TensorRT-enabled dev container for Jetson AGX Orin (JetPack 6.2 / L4T 36.4.x)
+# Base: same as your orin-l4t image (PyTorch 25.04 iGPU container)
+FROM nvcr.io/nvidia/pytorch:25.04-py3-igpu
+
+# Avoid interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+
+# Source ROS 2 setup script (same as your orin-l4t Dockerfile)
+SHELL ["/bin/bash", "-c"]
+
+# -----------------------------------------------------------------------------
+# System packages + TensorRT (C++ + Python + trtexec)
+# -----------------------------------------------------------------------------
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    git \
+    vim \
+    libhdf5-dev \
+    libhdf5-serial-dev \
+    hdf5-tools \
+    curl \
+    gnupg2 \
+    lsb-release \
+    locales \
+    tzdata \
+    tmux \
+    zstd \
+    && rm -rf /var/lib/apt/lists/*
+
+
+    
+
+
+# Workspace & Python deps (same as your orin-l4t Dockerfile)
+WORKDIR /home/root/workspace
+
+# Copy and install Python dependencies
+COPY ./requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt && rm /tmp/requirements.txt
+
+# Install uniception package without pulling extra deps (same as before)
+RUN pip install uniception --no-deps
+
+# Configure Git
+RUN git config --global --add safe.directory '*'
+
+
+# Install Zed SDK (same as your orin-l4t Dockerfile)
+RUN wget -O ./zed_sdk.run https://download.stereolabs.com/zedsdk/4.2/l4t36.4/jetsons && \
+    chmod +x ./zed_sdk.run && \
+    ./zed_sdk.run -- silent runtime_only skip_od_module skip_hub skip_tools && \
+    rm ./zed_sdk.run
+
+
+
+
+WORKDIR /home/root/workspace
+
+# Expose ports for visualization tools
+EXPOSE 9876 9877 9090
+
+CMD ["bash"]

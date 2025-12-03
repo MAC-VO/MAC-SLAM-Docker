@@ -1,0 +1,43 @@
+services:
+  trt-dev-orin:
+    build:
+      context: .
+      dockerfile: Dockerfile.trt-orin
+      args:
+        # JetPack / L4T tag for the base container.
+        # r36.4.0 corresponds to JetPack 6.x with TensorRT 10.3
+        L4T_JETPACK_TAG: "r36.4.0"
+        # Jetson AI Lab PyPI index for JetPack 6.2 + CUDA 12.6 wheels
+        JETSON_PYPI_INDEX: "https://pypi.jetson-ai-lab.io/jp6/cu126"
+
+    image: gihwan/macslam-trt:nov2025-v3-l4t-orin
+    container_name: dev-macslam-trt-orin
+    hostname: mac-dev-trt-container-orin
+
+    # Jetson requires the NVIDIA container runtime
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - ROS_DOMAIN_ID=91
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+
+    volumes:
+      - "${PROJ_DIR:-/home/airlab/workspace/gihwan/MACSLAM-internal}:/home/root/workspace:rw"
+      - "${DATA_DIR:-/home/airlab/workspace/gihwan/data}:/Data:rw"
+      - /opt/nvidia/nsight-systems:/opt/nvidia/nsight-systems/2024.5.4/bin/:ro
+      - /opt/nvidia/nsight-compute:/opt/nvidia/nsight-compute/2024.3.1/:ro
+
+    network_mode: "host"
+    ipc: "host"
+    shm_size: "1g"
+
+    # Open the same ports you used on 3090Ti (rerun, etc.)
+    ports:
+      - "9876:9876"
+      - "9877:9877"
+      - "9090:9090"
+
+    command: bash
+    tty: true
+    stdin_open: true
+    user: "root"
