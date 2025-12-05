@@ -1,54 +1,40 @@
-# Conditional base image to port lean image for Github Action.
-ARG BASE_IMAGE 
+ARG BASE_IMAGE="nvcr.io/nvidia/pytorch:25.06-py3"
+
 
 FROM ${BASE_IMAGE}
+ENV DEBIAN_FRONTEND=noninteractive
 
-# Install additional development tools (if needed)
+
+# Install additional development tools
 RUN apt-get update && apt-get install -y \
-    build-essential \
-    git \
-    vim \
-    wget \
+    tmux \
     && rm -rf /var/lib/apt/lists/*
 
-# Set up the working directory
+# Setup the working directory
 WORKDIR /home/root/workspace
 
+# Freeze some key packages from the current environment
+RUN pip freeze | grep -E '^(torch==|torchvision==|numpy==|tensorrt==)' \
+    > /tmp/constraints.txt
+
+# Load and install Python Requirements
 COPY requirements.txt /tmp/requirements.txt
-COPY additional-requirements.txt /tmp/additional-requirements.txt
-
-RUN pip install --no-cache-dir -r /tmp/requirements.txt && rm /tmp/requirements.txt
-
-# Install uniception package, use --no-deps to avoid installing dependencies that may conflict
-# with the existing environment
-RUN pip install uniception --no-deps 
-
-# Install CUDSS (only in Dev Environment)
-RUN if [ "$CI" = "false" ]; then \
-        wget https://developer.download.nvidia.com/compute/cudss/0.6.0/local_installers/cudss-local-repo-ubuntu2404-0.6.0_0.6.0-1_amd64.deb && \
-        dpkg -i cudss-local-repo-ubuntu2404-0.6.0_0.6.0-1_amd64.deb && \
-        cp /var/cudss-local-repo-ubuntu2404-0.6.0/cudss-*-keyring.gpg /usr/share/keyrings/ && \
-        apt-get update && \
-        apt-get -y install cudss && \
-        rm cudss-local-repo-ubuntu2404-0.6.0_0.6.0-1_amd64.deb; \
-    else \
-        echo "Skipping CUDSS install in CI environment"; \
-    fi
-
-# Install Additional python (only in Dev Environment)
-RUN if [ "$CI" = "false" ]; then \
-        pip install --no-cache-dir -r /tmp/additional-requirements.txt && rm /tmp/additional-requirements.txt; \
-    else \
-        echo "Skipping additional package"; \
-    fi
+RUN  pip install --no-cache-dir --upgrade-strategy only-if-needed\
+     -r /tmp/requirements.txt -c /tmp/constraints.txt \
+     && rm /tmp/requirements.txt
 
 # Configure Git
 RUN git config --global --add safe.directory '*'
 
-# Set up the working directory
-WORKDIR /home/devuser/workspace
+# Install CUDSS (For accelerated Sparse BA)
+RUN wget https://developer.download.nvidia.com/compute/cudss/0.7.1/local_installers/cudss-local-repo-ubuntu2404-0.7.1_0.7.1-1_amd64.deb && \
+    dpkg -i cudss-local-repo-ubuntu2404-0.7.1_0.7.1-1_amd64.deb && \
+    cp /var/cudss-local-repo-ubuntu2404-0.7.1/cudss-*-keyring.gpg /usr/share/keyrings/ && \
+    apt-get update && \
+    apt-get -y install cudss && \
+    rm ./cudss-local-repo-ubuntu2404-0.7.1_0.7.1-1_amd64.deb
 
 # Expose rerun visualization ports
-EXPOSE 9876 9877 9090
+EXPOSE 9876
 
 CMD ["bash"]

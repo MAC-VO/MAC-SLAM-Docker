@@ -1,58 +1,70 @@
-services:
-  dev:
-    build: 
-      context: .
-      dockerfile: Dockerfile
-      args:
-        BASE_IMAGE: pytorch/pytorch:2.8.0-cuda12.8-cudnn9-devel
-    
-    image: yutianchen/macslam:nov2025-v2
-    container_name: dev-macslam
-    hostname: mac-dev-container
-    runtime: nvidia
-    environment:
-      - NVIDIA_VISIBLE_DEVICES=all
-      - CI=false
-    volumes:
-      - "${PROJ_DIR:-/home/gihwan/mac-vo/MACSLAM-internal}:/home/devuser/workspace:rw"
-      - "${DATA_DIR:-/home/gihwan/mac-vo/data}:/Data:rw"
-    ports:
-      - "9876:9876"  # Rerun
-      - "9877:9877"  # 
-      - "9090:9090"  # 
-    command: bash
-    tty: true
-    stdin_open: true
-    user: "root"
+# System-level configuration are the same for all develop services
+x-common-config: &common-config
+  hostname: ${HOSTNAME}-dev
+  volumes:
+    - ../../:/workspace
+  working_dir: /workspace
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+  stdin_open: true
+  tty: true
+
+  # For profiliing in a Docker container
+  cap_add:
+    - SYS_ADMIN
+  privileged: true
   
-  github-action:
+  # For potential connection with Zed stereo camera
+  devices:
+    - "/dev/video0:/dev/video0"
+    - "/dev/video1:/dev/video1"
+
+  # Sufficient IPC shared memory for PyTorch as instructed in NVIDIA container.
+  ipc: host
+  ulimits:
+    memlock:
+      soft: -1
+      hard: -1
+    stack: 67108864
+
+  # Auxilary environment variables
+  environment:
+    - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    - NVIDIA_VISIBLE_DEVICES=all
+    - PYTHONUNBUFFERED=1
+
+# Per-resource configuration service.
+services:
+  linux-cuda12-dev:
+    <<: *common-config
+    image: macslam/mac-slam:linux-cu128
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        BASE_IMAGE: pytorch/pytorch:2.8.0-cuda12.8-cudnn9-runtime
-    
-    image: yutianchen/macslam:github-action
-    container_name: github-action-macslam
-    environment:
-      - CI=true
-    command: bash
-    user: "root"
-  
-  trt-dev:
-    build: 
+        BASE_IMAGE: "nvcr.io/nvidia/pytorch:25.06-py3"
+
+  linux-cuda13-dev:
+    <<: *common-config
+    image: macslam/mac-slam:linux-cu130
+    build:
       context: .
-      dockerfile: Dockerfile.trt-from-dev
+      dockerfile: Dockerfile
       args:
-        TRT_TAG: 25.03-py3
-    image: yutianchen/macslam:nov2025-v2-trt
-    container_name: dev-macslam-trt
-    hostname: mac-dev-trt-container
-    runtime: nvidia
+        BASE_IMAGE: "nvcr.io/nvidia/pytorch:25.08-py3"
+
+  github-action:
+    image: macslam/mac-slam:github-action
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BASE_IMAGE: "nvcr.io/nvidia/pytorch:25.06-py3"
+
     volumes:
-      - "${PROJ_DIR:-/home/gihwan/mac-vo/MACSLAM-internal}:/home/devuser/workspace:rw"
-      - "${DATA_DIR:-/home/gihwan/mac-vo/data}:/Data:rw"
-    command: bash
-    tty: true
-    stdin_open: true
-    user: "root"
+      - ../../:/workspace

@@ -1,49 +1,53 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Script to start interactive Docker container with optional host directory mounting
-# Usage: ./start_interact.sh [HOST_DIRECTORY] [DATA_DIRECTORY]
-# If HOST_DIRECTORY is provided, it will be mounted to /home/devuser/workspace in the container
-# If DATA_DIRECTORY is provided, it will be mounted to /Data in the container
+# Ensure HOSTNAME is an exported env var for docker compose
+export HOSTNAME="${HOSTNAME:-$(hostname)}"
 
-HOST_DIR="$1"
-DATA_DIR="$2"
-
-# Validate and process HOST_DIR if provided
-if [ -n "$HOST_DIR" ]; then
-    # Convert relative path to absolute path
-    HOST_DIR=$(realpath "$HOST_DIR")
-    
-    # Check if directory exists
-    if [ ! -d "$HOST_DIR" ]; then
-        echo "Error: Directory '$HOST_DIR' does not exist"
-        exit 1
-    fi
-    
-    echo "Mounting host directory: $HOST_DIR -> /home/devuser/workspace"
-fi
-
-# Validate and process DATA_DIR if provided
-if [ -n "$DATA_DIR" ]; then
-    # Convert relative path to absolute path
-    DATA_DIR=$(realpath "$DATA_DIR")
-    
-    # Check if directory exists
-    if [ ! -d "$DATA_DIR" ]; then
-        echo "Error: Directory '$DATA_DIR' does not exist"
-        exit 1
-    fi
-    
-    echo "Mounting data directory: $DATA_DIR -> /Data"
-fi
-
-# Run docker compose with appropriate environment variables
-if [ -n "$HOST_DIR" ] && [ -n "$DATA_DIR" ]; then
-    PROJ_DIR="$HOST_DIR" DATA_DIR="$DATA_DIR" docker compose run --rm --service-ports dev bash
-elif [ -n "$HOST_DIR" ]; then
-    PROJ_DIR="$HOST_DIR" docker compose run --rm --service-ports dev bash
-elif [ -n "$DATA_DIR" ]; then
-    DATA_DIR="$DATA_DIR" docker compose run --rm --service-ports dev bash
+# Optional override:
+#   FORCE_CUDA=12 ./start_interact.sh
+#   FORCE_CUDA=13 ./start_interact.sh
+if [[ "${FORCE_CUDA:-}" == "12" ]]; then
+    SERVICE="linux-cuda12-dev"
+elif [[ "${FORCE_CUDA:-}" == "13" ]]; then
+    SERVICE="linux-cuda13-dev"
 else
-    echo "Using default volume mount from docker-compose.yaml"
-    docker compose run --rm --service-ports dev bash
+    if ! command -v nvidia-smi >/dev/null 2>&1; then
+        echo "ERROR: nvidia-smi not found. Make sure NVIDIA drivers are installed on the host."
+        exit 1
+    fi
+
+    # Example line in nvidia-smi:
+    # | NVIDIA-SMI 560.35.03    Driver Version: 560.35.03    CUDA Version: 13.0 |
+    CUDA_MAJOR_STR=$(nvidia-smi | grep -oP 'CUDA Version:\s*\K[0-9]+' | head -n1 || true)
+
+    if [[ -z "${CUDA_MAJOR_STR}" ]]; then
+        echo "ERROR: Failed to detect CUDA version from nvidia-smi."
+        exit 1
+    fi
+
+    CUDA_MAJOR=$CUDA_MAJOR_STR
+
+    if (( CUDA_MAJOR >= 13 )); then
+        SERVICE="linux-cuda13-dev"
+    elif (( CUDA_MAJOR >= 12 )); then
+        SERVICE="linux-cuda12-dev"
+    else
+        echo "ERROR: Detected CUDA ${CUDA_MAJOR}, but this compose file expects >= 12."
+        exit 1
+    fi
 fi
+
+mount_args=()
+for path in "$@"; do
+    if [[ ! -e "${path}" ]]; then
+        echo "ERROR: Mount path does not exist: ${path}"
+        exit 1
+    fi
+
+    abs_path=$(realpath "${path}")
+    mount_args+=("-v" "${abs_path}:${abs_path}")
+done
+
+echo "Starting service: ${SERVICE}"
+docker compose run --rm --service-ports "${mount_args[@]}" "${SERVICE}" bash
