@@ -29,7 +29,7 @@ FROM python:3.12-slim
 WORKDIR /workspace
 
 # Install Pyright
-RUN apt-get update && apt-get install -y libatomic1 && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y libatomic1 git && rm -rf /var/lib/apt/lists/*
 RUN pip install --no-cache-dir pyright
 
 # Copy the "Skeleton" libraries from the heavy image
