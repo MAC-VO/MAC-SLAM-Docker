@@ -30,12 +30,12 @@ RUN  pip install --no-cache-dir --upgrade-strategy only-if-needed rerun-sdk==0.2
 RUN git config --global --add safe.directory '*'
 
 # Install CUDSS (For accelerated Sparse BA)
-RUN wget https://developer.download.nvidia.com/compute/cudss/0.7.1/local_installers/cudss-local-repo-ubuntu2404-0.7.1_0.7.1-1_amd64.deb && \
-    dpkg -i cudss-local-repo-ubuntu2404-0.7.1_0.7.1-1_amd64.deb && \
-    cp /var/cudss-local-repo-ubuntu2404-0.7.1/cudss-*-keyring.gpg /usr/share/keyrings/ && \
+RUN wget https://developer.download.nvidia.com/compute/cudss/0.6.0/local_installers/cudss-local-repo-ubuntu2404-0.6.0_0.6.0-1_amd64.deb && \
+    dpkg -i cudss-local-repo-ubuntu2404-0.6.0_0.6.0-1_amd64.deb && \
+    cp /var/cudss-local-repo-ubuntu2404-0.6.0/cudss-*-keyring.gpg /usr/share/keyrings/ && \
     apt-get update && \
     apt-get -y install cudss && \
-    rm ./cudss-local-repo-ubuntu2404-0.7.1_0.7.1-1_amd64.deb
+    rm ./cudss-local-repo-ubuntu2404-0.6.0_0.6.0-1_amd64.deb
 
 # Expose rerun visualization ports
 EXPOSE 9876

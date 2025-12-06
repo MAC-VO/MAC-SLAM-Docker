@@ -77,5 +77,25 @@ services:
       args:
         BASE_IMAGE: "nvcr.io/nvidia/pytorch:25.08-py3"
 
+  test-type:
+    profiles: ["amd64"]
+    platform: linux/amd64
+    image: macslam/mac-slam:linux-static-analysis-amd64
+    working_dir: /workspace
+    build:
+      context: .
+      dockerfile: Dockerfile.test-type
+      args:
+        BASE_IMAGE: "macslam/mac-slam:linux-cu128-amd64"
+
+    volumes:
+      - ../../:/workspace
+
+  test-cfg:
+    profiles: ["amd64"]
+    platform: linux/amd64
+    image: macslam/mac-slam:linux-cu128-amd64
+    command: "pytest -m 'not local'"
+    working_dir: /workspace
     volumes:
       - ../../:/workspace

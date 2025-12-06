@@ -9,8 +9,8 @@ pyright
 flow_vis
 omegaconf
 jaxtyping
+typeguard
 safetensors
 huggingface-hub
 pybind11-stubgen
-typeguard
 opencv-python-headless
