@@ -1,6 +1,6 @@
 # System-level configuration are the same for all develop services
 x-common-config: &common-config
-  hostname: ${HOSTNAME}-dev
+  hostname: ${HOSTNAME:-macslam}-dev
   volumes:
     - ../../:/workspace
   working_dir: /workspace
@@ -13,6 +13,10 @@ x-common-config: &common-config
             capabilities: [gpu]
   stdin_open: true
   tty: true
+
+  # Expose network port for rerun visualizer
+  ports:
+    - "9876:9876"
 
   # For profiliing in a Docker container
   cap_add:
@@ -42,29 +46,36 @@ x-common-config: &common-config
 services:
   linux-cuda12-dev:
     <<: *common-config
-    image: macslam/mac-slam:linux-cu128
+    profiles: ["amd64"]
+    platform: linux/amd64
+    image: macslam/mac-slam:linux-cu128-amd64
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        BASE_IMAGE: "nvcr.io/nvidia/pytorch:25.06-py3"
+        BASE_IMAGE: "nvcr.io/nvidia/pytorch:25.03-py3"
 
   linux-cuda13-dev:
     <<: *common-config
-    image: macslam/mac-slam:linux-cu130
+    profiles: ["amd64"]
+    platform: linux/amd64
+    image: macslam/mac-slam:linux-cu130-amd64
     build:
       context: .
       dockerfile: Dockerfile
       args:
         BASE_IMAGE: "nvcr.io/nvidia/pytorch:25.08-py3"
 
-  github-action:
-    image: macslam/mac-slam:github-action
+  jetson-thor-dev:
+    <<: *common-config
+    profiles: ["arm64"]
+    platform: linux/arm64
+    image: macslam/mac-slam:linux-cu130-arm64
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        BASE_IMAGE: "nvcr.io/nvidia/pytorch:25.06-py3"
+        BASE_IMAGE: "nvcr.io/nvidia/pytorch:25.08-py3"
 
     volumes:
       - ../../:/workspace

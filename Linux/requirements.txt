@@ -8,10 +8,9 @@ loguru
 pyright
 flow_vis
 omegaconf
-rerun-sdk
 jaxtyping
 safetensors
 huggingface-hub
 pybind11-stubgen
-typeguard==2.13.3
+typeguard
 opencv-python-headless
