@@ -38,7 +38,7 @@ x-common-config: &common-config
 
   # Auxilary environment variables
   environment:
-    - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    - NVIDIA_DRIVER_CAPABILITIES=all
     - NVIDIA_VISIBLE_DEVICES=all
     - PYTHONUNBUFFERED=1
 
@@ -70,24 +70,39 @@ services:
     <<: *common-config
     profiles: ["arm64"]
     platform: linux/arm64
-    image: macslam/mac-slam:linux-cu130-arm64
+    image: macslam/mac-slam:linux-cu130-thor-arm64
     build:
       context: .
       dockerfile: Dockerfile
       args:
         BASE_IMAGE: "nvcr.io/nvidia/pytorch:25.08-py3"
+  
+  jetson-orin-dev:
+    <<: *common-config
+    profiles: ["arm64"]
+    platform: linux/arm64
+    image: macslam/mac-slam:linux-cu128-orin-arm64
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BASE_IMAGE: "nvcr.io/nvidia/pytorch:25.03-py3-igpu"
 
   test-type:
     profiles: ["amd64"]
     platform: linux/amd64
     image: macslam/mac-slam:linux-static-analysis-amd64
     working_dir: /workspace
+    depends_on:
+      - linux-cuda12-dev
+      - linux-cuda13-dev
+    
     build:
       context: .
       dockerfile: Dockerfile.test-type
       args:
         BASE_IMAGE: "macslam/mac-slam:linux-cu128-amd64"
-
+    
     volumes:
       - ../../:/workspace
 
@@ -95,7 +110,11 @@ services:
     profiles: ["amd64"]
     platform: linux/amd64
     image: macslam/mac-slam:linux-cu128-amd64
-    command: "pytest -m 'not local'"
     working_dir: /workspace
+    depends_on:
+      - linux-cuda12-dev
+      - linux-cuda13-dev
+    
+    command: "pytest -m 'not local'"
     volumes:
       - ../../:/workspace
