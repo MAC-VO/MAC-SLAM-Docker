@@ -1,9 +1,9 @@
 ARG BASE_IMAGE="nvcr.io/nvidia/pytorch:25.06-py3"
-
-
 FROM ${BASE_IMAGE}
-ENV DEBIAN_FRONTEND=noninteractive
 
+ARG  CUDA_MAJOR_VERSION="12"
+ENV  DEBIAN_FRONTEND=noninteractive
+ENV  CUDA_MAJOR_VERSION="${CUDA_MAJOR_VERSION}"
 
 # Install additional development tools
 # Dev    requirement: {tmux}

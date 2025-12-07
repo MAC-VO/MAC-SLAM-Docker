@@ -55,6 +55,7 @@ services:
       dockerfile: Dockerfile
       args:
         BASE_IMAGE: "nvcr.io/nvidia/pytorch:25.03-py3"
+        CUDA_MAJOR_VERSION: "12"
 
   linux-cuda13-dev:
     <<: *common-config
@@ -66,6 +67,7 @@ services:
       dockerfile: Dockerfile
       args:
         BASE_IMAGE: "nvcr.io/nvidia/pytorch:25.08-py3"
+        CUDA_MAJOR_VERSION: "13"
 
   jetson-thor-dev:
     <<: *common-config
@@ -77,6 +79,7 @@ services:
       dockerfile: Dockerfile
       args:
         BASE_IMAGE: "nvcr.io/nvidia/pytorch:25.08-py3"
+        CUDA_MAJOR_VERSION: "13"
   
   jetson-orin-dev:
     <<: *common-config
@@ -88,6 +91,7 @@ services:
       dockerfile: Dockerfile
       args:
         BASE_IMAGE: "nvcr.io/nvidia/pytorch:25.03-py3-igpu"
+        CUDA_MAJOR_VERSION: "12"
 
     # Fix the libjpeg library problem for PyZed
     volumes:
@@ -143,7 +147,7 @@ services:
     image: macslam/mac-slam:linux-cu128-amd64
     command: "pytest -m 'not local'"
 
-  dev-container-unified-entry:
+  dev-unified-entry:
     <<: *common-config
 
     image: ${DEV_IMAGE}
