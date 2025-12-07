@@ -127,9 +127,6 @@ services:
     platform: linux/amd64
     image: macslam/mac-slam:linux-static-analysis-amd64
     working_dir: /workspace
-    depends_on:
-      - linux-cuda12-dev
-      - linux-cuda13-dev
     
     build:
       context: .

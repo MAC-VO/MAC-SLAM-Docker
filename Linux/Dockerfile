@@ -6,10 +6,10 @@ ENV  DEBIAN_FRONTEND=noninteractive
 ENV  CUDA_MAJOR_VERSION="${CUDA_MAJOR_VERSION}"
 
 # Install additional development tools
-# Dev    requirement: {tmux}
+# Dev    requirement: {tmux, libeigen3-dev}
 # ZedSDK requirement: {zstd}
 RUN apt-get update && apt-get install -y \
-    tmux \
+    tmux libeigen3-dev \
     zstd \
     && rm -rf /var/lib/apt/lists/*
 
