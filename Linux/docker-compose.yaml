@@ -81,12 +81,41 @@ services:
     <<: *common-config
     profiles: ["arm64"]
     platform: linux/arm64
-    image: macslam/mac-slam:linux-cu128-orin-arm64
+    image: macslam/mac-slam:linux-cu126-orin-arm64
     build:
       context: .
       dockerfile: Dockerfile
       args:
         BASE_IMAGE: "nvcr.io/nvidia/pytorch:25.03-py3-igpu"
+
+    # Fix the libjpeg library problem for PyZed
+    volumes:
+      - ../../:/workspace
+      - /usr/lib/aarch64-linux-gnu/tegra:/usr/lib/aarch64-linux-gnu/tegra
+      - /usr/lib/aarch64-linux-gnu/libjpeg.so.8:/usr/lib/aarch64-linux-gnu/libjpeg.so.8
+
+  test-type-jetson:
+    profiles: ["arm64"]
+    platform: linux/arm64
+    image: macslam/mac-slam:linux-static-analysis-arm64
+    working_dir: /workspace
+    
+    build:
+      context: .
+      dockerfile: Dockerfile.test-type
+      args:
+        BASE_IMAGE: macslam/mac-slam:linux-cu128-orin-arm64
+    
+    command: "pyright"
+    volumes:
+      - ../../:/workspace
+
+  test-cfg-jetson:
+    <<: *common-config
+    profiles: ["arm64"]
+    platform: linux/arm64
+    image: macslam/mac-slam:linux-cu128-orin-arm64
+    command: "pytest -m 'not local'"
 
   test-type:
     profiles: ["amd64"]
@@ -107,14 +136,16 @@ services:
       - ../../:/workspace
 
   test-cfg:
+    <<: *common-config
     profiles: ["amd64"]
     platform: linux/amd64
     image: macslam/mac-slam:linux-cu128-amd64
-    working_dir: /workspace
-    depends_on:
-      - linux-cuda12-dev
-      - linux-cuda13-dev
-    
     command: "pytest -m 'not local'"
-    volumes:
-      - ../../:/workspace
+
+  dev-container-unified-entry:
+    <<: *common-config
+
+    image: ${DEV_IMAGE:-macslam/mac-slam:linux-cu128-amd64}
+    platform: ${DEV_PLATFORM:-linux/amd64}
+    container_name: macslam-unified-dev
+    command: sleep infinity
