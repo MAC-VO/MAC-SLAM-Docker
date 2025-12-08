@@ -7,9 +7,9 @@ kornia
 loguru
 pyright
 flow_vis
+beartype
 omegaconf
 jaxtyping
-typeguard
 safetensors
 torch_scatter
 huggingface-hub
