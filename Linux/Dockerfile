@@ -25,6 +25,7 @@ COPY ./Material/requirements.txt /tmp/requirements.txt
 RUN  pip install --no-cache-dir --upgrade-strategy only-if-needed\
      -r /tmp/requirements.txt -c /tmp/constraints.txt \
      && rm /tmp/requirements.txt
+RUN  pip install uniception --no-deps
 
 # Unofficial support for Rerun > 0.23 with Numpy < 2.0
 RUN  pip install --no-cache-dir --upgrade-strategy only-if-needed rerun-sdk==0.26 --no-deps

@@ -11,6 +11,7 @@ flow_vis
 beartype
 omegaconf
 jaxtyping
+warp-lang
 safetensors
 torch_scatter
 huggingface-hub
