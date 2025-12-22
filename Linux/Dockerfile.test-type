@@ -14,11 +14,12 @@ WORKDIR /export
 # UPDATED FIND COMMAND:
 # 1. Added .pth (Path configuration files)
 # 2. Added .json (Often needed for library configs)
-# 3. Added dist-info (Contains metadata that Pyright sometimes checks)
+# 3. Added _rotation.*.so (for scipy.spatial.transform.Rotation, which does not provide pyi stub file.)
+# 4. Added dist-info (Contains metadata that Pyright sometimes checks)
 RUN SITE_PACKAGES=$(python -c "import site; print(site.getsitepackages()[0])") && \
     mkdir -p ./site-packages && \
     cd "$SITE_PACKAGES" && \
-    find . -type f \( -name "*.py" -o -name "*.pyi" -o -name "*.pth" -o -name "*.json" \) \
+    find . -type f \( -name "*.py" -o -name "*.pyi" -o -name "*.pth" -o -name "*.json" -o -name "_rotation.*.so" \) \
     -not -path "*/__pycache__/*" \
     -exec cp --parents "{}" /export/site-packages/ \;
 
