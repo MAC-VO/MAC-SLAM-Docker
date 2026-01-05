@@ -6,10 +6,10 @@ ENV  DEBIAN_FRONTEND=noninteractive
 ENV  CUDA_MAJOR_VERSION="${CUDA_MAJOR_VERSION}"
 
 # Install additional development tools
-# Dev    requirement: {tmux, libeigen3-dev}
+# Dev    requirement: {tmux, libeigen3-dev, clangd}
 # ZedSDK requirement: {zstd}
 RUN apt-get update && apt-get install -y \
-    tmux libeigen3-dev \
+    tmux libeigen3-dev clangd \
     zstd \
     && rm -rf /var/lib/apt/lists/*
 
@@ -28,7 +28,10 @@ RUN  pip install --no-cache-dir --upgrade-strategy only-if-needed\
 RUN  pip install uniception --no-deps
 
 # Unofficial support for Rerun > 0.23 with Numpy < 2.0
-RUN  pip install --no-cache-dir --upgrade-strategy only-if-needed rerun-sdk==0.26 --no-deps
+RUN  pip install --no-cache-dir --upgrade-strategy only-if-needed rerun-sdk==0.26.0 --no-deps
+RUN  curl -L https://github.com/rerun-io/rerun/releases/download/0.26.0/rerun_cpp_sdk.zip -o rerun_cpp_sdk.zip && \
+    unzip rerun_cpp_sdk.zip -d /usr/local && \
+    rm rerun_cpp_sdk.zip
 
 # Configure Git
 RUN  git config --global --add safe.directory '*'
