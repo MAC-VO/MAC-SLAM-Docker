@@ -1,5 +1,6 @@
 evo
 yacs
+timm
 wandb
 pyyaml
 pypose
