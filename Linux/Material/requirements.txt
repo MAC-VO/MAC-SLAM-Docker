@@ -14,7 +14,6 @@ omegaconf
 jaxtyping
 warp-lang
 safetensors
-torch_scatter
 huggingface-hub
 pybind11-stubgen
 opencv-python-headless
@@ -25,4 +24,4 @@ onnxruntime
 onnxconverter-common
 onnx-graphsurgeon
 onnxslim
-nvidia-modelopt==0.40.0
+

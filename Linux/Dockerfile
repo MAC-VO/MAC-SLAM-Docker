@@ -25,6 +25,7 @@ COPY ./Material/requirements.txt /tmp/requirements.txt
 RUN  pip install --no-cache-dir --upgrade-strategy only-if-needed\
      -r /tmp/requirements.txt -c /tmp/constraints.txt \
      && rm /tmp/requirements.txt
+# For UFM and MapAnything
 RUN  pip install uniception==0.1.4 --no-deps
 
 # Unofficial support for Rerun > 0.23 with Numpy < 2.0
@@ -35,6 +36,10 @@ RUN  curl -L https://github.com/rerun-io/rerun/releases/download/0.26.0/rerun_cp
 
 # Configure Git
 RUN  git config --global --add safe.directory '*'
+
+# Install ModelOpt for Quantization
+COPY ./Material/install_modelopt.sh /tmp/install_modelopt.sh
+RUN  bash /tmp/install_modelopt.sh
 
 # Install CUDSS (For accelerated Sparse BA)
 COPY ./Material/install_cudss.sh /tmp/install_cudss.sh
