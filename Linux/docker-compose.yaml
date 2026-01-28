@@ -55,6 +55,22 @@ services:
     # Expose network port for rerun visualizer
     ports:
       - "9876:9876"
+  
+  # For old GPU architectures like V100, etc.
+  linux-cuda126-dev:
+    <<: *common-config
+    profiles: ["amd64"]
+    platform: linux/amd64
+    image: macslam/mac-slam:linux-cu126-amd64
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BASE_IMAGE: "nvcr.io/nvidia/pytorch:24.09-py3"
+        CUDA_MAJOR_VERSION: "12"
+    # Expose network port for rerun visualizer
+    ports:
+      - "9876:9876"
 
   linux-cuda13-dev:
     <<: *common-config
