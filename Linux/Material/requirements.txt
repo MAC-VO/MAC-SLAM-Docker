@@ -16,7 +16,7 @@ warp-lang
 safetensors
 huggingface-hub
 pybind11-stubgen
-opencv-python-headless
+# opencv-python-headless
 
 # TensorRT acceleration & Quantization
 onnxscript

@@ -37,6 +37,10 @@ RUN  curl -L https://github.com/rerun-io/rerun/releases/download/0.26.0/rerun_cp
 # Configure Git
 RUN  git config --global --add safe.directory '*'
 
+# if CUDA_MAJOR_VERSION is 13, install cv2
+COPY ./Material/install_cv2.sh /tmp/install_cv2.sh
+RUN  bash /tmp/install_cv2.sh
+
 # Install ModelOpt for Quantization
 COPY ./Material/install_modelopt.sh /tmp/install_modelopt.sh
 RUN  bash /tmp/install_modelopt.sh
