@@ -1,8 +1,13 @@
 # System-level configuration are the same for all develop services
 x-common-config: &common-config
   hostname: ${HOSTNAME:-macslam}-dev
+  # Mount /dev to give access to all devices including:
+  # - video0/video1: Stereo camera pair  
+  # - hidraw*: ZED IMU/sensors (MCU communicates over USB HID)
+  # - bus/usb: USB bus
   volumes:
     - ../../:/workspace
+    - /dev:/dev
   working_dir: /workspace
   deploy:
     resources:
@@ -19,11 +24,6 @@ x-common-config: &common-config
   cap_add:
     - SYS_ADMIN
   privileged: true
-  
-  # For potential connection with Zed stereo camera
-  devices:
-    - "/dev/video0:/dev/video0"
-    - "/dev/video1:/dev/video1"
 
   # Sufficient IPC shared memory for PyTorch as instructed in NVIDIA container.
   ipc: host
