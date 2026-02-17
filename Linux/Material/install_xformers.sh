@@ -5,7 +5,9 @@ set -e
 # Supports: x86_64, arm64 L4T (Orin), arm64 SBSA (Thor).
 
 # Limit build parallelism for concurrent docker compose builds (override with MAX_JOBS env if needed)
-export MAX_JOBS="${MAX_JOBS:-2}"
+_DEFAULT_JOBS=$(( $(nproc) / 4 ))
+_DEFAULT_JOBS=$(( _DEFAULT_JOBS < 2 ? 2 : _DEFAULT_JOBS ))
+export MAX_JOBS="${MAX_JOBS:-$_DEFAULT_JOBS}"
 
 ARCH=$(uname -m)
 KERNEL=$(uname -r)
@@ -29,10 +31,19 @@ TORCH_MINOR=$(echo "$TORCH_VERSION" | cut -d. -f2)
 
 if [[ "$TORCH_MAJOR" -eq 2 && "$TORCH_MINOR" -le 5 ]]; then
     XFORMERS_TAG="v0.0.28.post1"
+elif [[ "$TORCH_MAJOR" -eq 2 && "$TORCH_MINOR" -eq 6 ]]; then
+    XFORMERS_TAG="v0.0.29.post2"
+elif [[ "$TORCH_MAJOR" -eq 2 && "$TORCH_MINOR" -eq 7 ]]; then
+    XFORMERS_TAG="v0.0.30"
+elif [[ "$TORCH_MAJOR" -eq 2 && "$TORCH_MINOR" -eq 8 ]]; then
+    XFORMERS_TAG="v0.0.32"
+elif [[ "$TORCH_MAJOR" -eq 2 && "$TORCH_MINOR" -eq 9 ]]; then
+    XFORMERS_TAG="v0.0.33.post2"
 elif [[ "$TORCH_MAJOR" -eq 2 && "$TORCH_MINOR" -ge 10 ]]; then
     XFORMERS_TAG="v0.0.34"
 else
-    XFORMERS_TAG="v0.0.33"
+    echo "!!! Error: Unsupported PyTorch version: $TORCH_VERSION"
+    exit 1
 fi
 
 echo ">>> Building xformers $XFORMERS_TAG (torch $TORCH_VERSION, arch $ARCH)"
