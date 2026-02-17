@@ -49,6 +49,10 @@ RUN  bash /tmp/install_modelopt.sh
 COPY ./Material/install_cudss.sh /tmp/install_cudss.sh
 RUN  bash /tmp/install_cudss.sh
 
+# Install xformers (build from source)
+COPY ./Material/install_xformers.sh /tmp/install_xformers.sh
+RUN  bash /tmp/install_xformers.sh
+
 # Install Zed SDK
 COPY ./Material/install_zedsdk.sh /tmp/install_zedsdk.sh
 RUN  bash /tmp/install_zedsdk.sh

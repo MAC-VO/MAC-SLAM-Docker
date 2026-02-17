@@ -16,7 +16,6 @@ warp-lang
 safetensors
 huggingface-hub
 pybind11-stubgen
-# opencv-python-headless
 
 # TensorRT acceleration & Quantization
 onnxscript
@@ -25,3 +24,6 @@ onnxconverter-common
 onnx-graphsurgeon
 onnxslim
 
+# Build dependencies for xFormers
+ninja
+packaging
