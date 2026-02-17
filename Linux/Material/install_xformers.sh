@@ -24,6 +24,13 @@ else
     exit 1
 fi
 
+# xformers requires torch.distributed; skip install on platforms where it is unavailable
+# Reference: https://github.com/facebookresearch/xformers/issues/1378
+if ! python3 -c "import torch; assert torch.distributed.is_available()" 2>/dev/null; then
+    echo ">>> Skipping xformers: torch.distributed is not available"
+    exit 0
+fi
+
 # Pick xformers tag compatible with container's torch
 TORCH_VERSION=$(python3 -c "import torch; v=torch.__version__.split('+')[0]; print(v)")
 TORCH_MAJOR=$(echo "$TORCH_VERSION" | cut -d. -f1)
