@@ -9,4 +9,6 @@ else
     exit 1
 fi
 
-exec docker compose --profile "$PROFILE" "$@"
+docker compose -f docker-compose.yaml --profile "$PROFILE" "$@" && \
+docker compose -f docker-compose-type.yaml --profile "$PROFILE" "$@" && \
+docker compose -f docker-compose-ros-humble.yaml --profile "$PROFILE" "$@"

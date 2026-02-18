@@ -1,0 +1,11 @@
+ARG BASE_IMAGE="macslam/mac-slam:linux-cu128-amd64"
+
+FROM ${BASE_IMAGE}
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV ROS_DISTRO=humble
+
+COPY ./Material/install_ros2_humble.sh /tmp/install_ros2_humble.sh
+RUN  bash /tmp/install_ros2_humble.sh && rm /tmp/install_ros2_humble.sh
+
+CMD ["bash"]

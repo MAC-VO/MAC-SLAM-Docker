@@ -1,0 +1,98 @@
+x-common-config: &common-config
+  hostname: ${HOSTNAME:-macslam}-dev
+  volumes:
+    - ../../:/workspace
+    - /dev:/dev
+  working_dir: /workspace
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+  stdin_open: true
+  runtime: nvidia
+  tty: true
+
+  cap_add:
+    - SYS_ADMIN
+  privileged: true
+
+  ipc: host
+  ulimits:
+    memlock:
+      soft: -1
+      hard: -1
+    stack: 67108864
+
+  environment:
+    - NVIDIA_DRIVER_CAPABILITIES=all
+    - NVIDIA_VISIBLE_DEVICES=all
+    - PYTHONUNBUFFERED=1
+
+services:
+  ros-humble-cu128-dev:
+    <<: *common-config
+    profiles: ["amd64"]
+    platform: linux/amd64
+    image: macslam/mac-slam:ros-humble-cu128-amd64
+    build:
+      context: .
+      dockerfile: Dockerfile.ros-humble
+      args:
+        BASE_IMAGE: "macslam/mac-slam:linux-cu128-amd64"
+    ports:
+      - "9876:9876"
+
+  ros-humble-cu126-dev:
+    <<: *common-config
+    profiles: ["amd64"]
+    platform: linux/amd64
+    image: macslam/mac-slam:ros-humble-cu126-amd64
+    build:
+      context: .
+      dockerfile: Dockerfile.ros-humble
+      args:
+        BASE_IMAGE: "macslam/mac-slam:linux-cu126-amd64"
+    ports:
+      - "9876:9876"
+
+  ros-humble-cu130-dev:
+    <<: *common-config
+    profiles: ["amd64"]
+    platform: linux/amd64
+    image: macslam/mac-slam:ros-humble-cu130-amd64
+    build:
+      context: .
+      dockerfile: Dockerfile.ros-humble
+      args:
+        BASE_IMAGE: "macslam/mac-slam:linux-cu130-amd64"
+    ports:
+      - "9876:9876"
+
+  ros-humble-jetson-thor-dev:
+    <<: *common-config
+    profiles: ["arm64"]
+    platform: linux/arm64
+    image: macslam/mac-slam:ros-humble-thor-arm64
+    build:
+      context: .
+      dockerfile: Dockerfile.ros-humble
+      args:
+        BASE_IMAGE: "macslam/mac-slam:linux-cu130-thor-arm64"
+    ports:
+      - "9876:9876"
+
+  ros-humble-jetson-orin-dev:
+    <<: *common-config
+    profiles: ["arm64"]
+    platform: linux/arm64
+    image: macslam/mac-slam:ros-humble-orin-arm64
+    build:
+      context: .
+      dockerfile: Dockerfile.ros-humble
+      args:
+        BASE_IMAGE: "macslam/mac-slam:linux-cu126-orin-arm64"
+    ports:
+      - "9876:9876"
