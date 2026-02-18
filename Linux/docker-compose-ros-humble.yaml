@@ -30,6 +30,7 @@ x-common-config: &common-config
     - NVIDIA_DRIVER_CAPABILITIES=all
     - NVIDIA_VISIBLE_DEVICES=all
     - PYTHONUNBUFFERED=1
+    - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-47}
 
 services:
   ros-humble-cu128-dev:
@@ -94,5 +95,14 @@ services:
       dockerfile: Dockerfile.ros-humble
       args:
         BASE_IMAGE: "macslam/mac-slam:linux-cu126-orin-arm64"
+    ports:
+      - "9876:9876"
+
+  dev-unified-entry:
+    <<: *common-config
+    image: ${ROS_IMAGE}
+    platform: ${DEV_PLATFORM}
+    container_name: macslam-ros-humble-dev
+    command: sleep infinity
     ports:
       - "9876:9876"
