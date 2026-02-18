@@ -2,6 +2,7 @@ evo
 yacs
 timm
 wandb
+einops
 pyyaml
 pypose
 kornia
