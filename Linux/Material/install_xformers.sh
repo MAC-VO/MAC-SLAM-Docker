@@ -12,8 +12,13 @@ export MAX_JOBS="${MAX_JOBS:-$_DEFAULT_JOBS}"
 ARCH=$(uname -m)
 KERNEL=$(uname -r)
 
-# Set TORCH_CUDA_ARCH_LIST per platform
-if [[ "$ARCH" = "x86_64" ]]; then
+# Set TORCH_CUDA_ARCH_LIST per platform and CUDA version
+#   x86_64 + CUDA 13 = SM120 (RTX 5090)
+#   x86_64 + CUDA 12 = SM70 - SM90
+#   Orin and Thor are specifically hard coded
+if [[ "$ARCH" = "x86_64" && "$CUDA_MAJOR_VERSION" -ge 13 ]]; then
+    export TORCH_CUDA_ARCH_LIST="12.0+PTX"
+elif [[ "$ARCH" = "x86_64" ]]; then
     export TORCH_CUDA_ARCH_LIST="7.0;7.5;8.0;8.6;8.9;9.0"
 elif [[ "$KERNEL" =~ tegra && "$ARCH" = "aarch64" ]]; then
     export TORCH_CUDA_ARCH_LIST="8.7"
