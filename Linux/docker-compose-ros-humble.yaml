@@ -19,6 +19,7 @@ x-common-config: &common-config
     - SYS_ADMIN
   privileged: true
 
+  network_mode: host
   ipc: host
   ulimits:
     memlock:
@@ -31,6 +32,7 @@ x-common-config: &common-config
     - NVIDIA_VISIBLE_DEVICES=all
     - PYTHONUNBUFFERED=1
     - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-47}
+    - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 
 services:
   ros-humble-cu128-dev:
@@ -43,8 +45,6 @@ services:
       dockerfile: Dockerfile.ros-humble
       args:
         BASE_IMAGE: "macslam/mac-slam:linux-cu128-amd64"
-    ports:
-      - "9876:9876"
 
   ros-humble-cu126-dev:
     <<: *common-config
@@ -56,8 +56,6 @@ services:
       dockerfile: Dockerfile.ros-humble
       args:
         BASE_IMAGE: "macslam/mac-slam:linux-cu126-amd64"
-    ports:
-      - "9876:9876"
 
   ros-humble-cu130-dev:
     <<: *common-config
@@ -69,8 +67,6 @@ services:
       dockerfile: Dockerfile.ros-humble
       args:
         BASE_IMAGE: "macslam/mac-slam:linux-cu130-amd64"
-    ports:
-      - "9876:9876"
 
   ros-humble-jetson-thor-dev:
     <<: *common-config
@@ -82,8 +78,6 @@ services:
       dockerfile: Dockerfile.ros-humble
       args:
         BASE_IMAGE: "macslam/mac-slam:linux-cu130-thor-arm64"
-    ports:
-      - "9876:9876"
 
   ros-humble-jetson-orin-dev:
     <<: *common-config
@@ -95,8 +89,6 @@ services:
       dockerfile: Dockerfile.ros-humble
       args:
         BASE_IMAGE: "macslam/mac-slam:linux-cu126-orin-arm64"
-    ports:
-      - "9876:9876"
 
   dev-unified-entry:
     <<: *common-config
@@ -104,5 +96,3 @@ services:
     platform: ${DEV_PLATFORM}
     container_name: macslam-ros-humble-dev
     command: sleep infinity
-    ports:
-      - "9876:9876"

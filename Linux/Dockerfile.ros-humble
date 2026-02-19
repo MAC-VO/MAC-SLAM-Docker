@@ -8,4 +8,8 @@ ENV ROS_DISTRO=humble
 COPY ./Material/install_ros2_humble.sh /tmp/install_ros2_humble.sh
 RUN  bash /tmp/install_ros2_humble.sh && rm /tmp/install_ros2_humble.sh
 
+COPY ./Material/install_ros2_cyclonedds.sh /tmp/install_ros2_cyclonedds.sh
+RUN  bash /tmp/install_ros2_cyclonedds.sh && rm /tmp/install_ros2_cyclonedds.sh
+ENV  RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+
 CMD ["bash"]
