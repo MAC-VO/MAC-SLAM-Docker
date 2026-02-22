@@ -3,6 +3,7 @@ x-common-config: &common-config
   volumes:
     - ../../:/workspace
     - /dev:/dev
+    - /tmp/argus_socket:/tmp/argus_socket
   working_dir: /workspace
   deploy:
     resources:
@@ -80,6 +81,8 @@ services:
         BASE_IMAGE: "macslam/mac-slam:linux-cu130-thor-arm64"
     volumes:
       - ../../:/workspace
+      - /dev:/dev
+      - /tmp/argus_socket:/tmp/argus_socket
       - /opt/nvidia/nsight-systems/:/opt/nvidia/nsight-systems/
       - /opt/nvidia/nsight-compute/:/opt/nvidia/nsight-compute/
 
@@ -95,6 +98,8 @@ services:
         BASE_IMAGE: "macslam/mac-slam:linux-cu126-orin-arm64"
     volumes:
       - ../../:/workspace
+      - /dev:/dev
+      - /tmp/argus_socket:/tmp/argus_socket      
       - /usr/lib/aarch64-linux-gnu/tegra:/usr/lib/aarch64-linux-gnu/tegra
       - /usr/lib/aarch64-linux-gnu/libjpeg.so.8:/usr/lib/aarch64-linux-gnu/libjpeg.so.8
       - /opt/nvidia/nsight-systems/:/opt/nvidia/nsight-systems/
