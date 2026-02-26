@@ -6,12 +6,19 @@ ENV  DEBIAN_FRONTEND=noninteractive
 ENV  CUDA_MAJOR_VERSION="${CUDA_MAJOR_VERSION}"
 
 # Install additional development tools
-# Dev    requirement: {tmux, libeigen3-dev, clangd}
+# Dev    requirement: {tmux, libeigen3-dev, libopencv-dev, clangd}
 # ZedSDK requirement: {zstd}
-RUN apt-get update && apt-get install -y \
-    tmux libeigen3-dev clangd \
+# NOTE:
+# Installing Ubuntu OpenCV packages can pull system UCX variants that conflict with
+# the HPCX UCX/UCC stack bundled in the NGC base image. Keep package install minimal,
+# and force HPCX search order to avoid torch import failures.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    tmux libeigen3-dev libopencv-dev clangd pkg-config libboost-dev libboost-serialization-dev \
     zstd \
     && rm -rf /var/lib/apt/lists/*
+
+# Prefer bundled HPCX UCX/UCC runtime over distro UCX to keep torch import stable.
+ENV LD_LIBRARY_PATH="/opt/hpcx/ucx/lib:/opt/hpcx/ucc/lib:${LD_LIBRARY_PATH}"
 
 # Setup the working directory
 WORKDIR /home/root/workspace
