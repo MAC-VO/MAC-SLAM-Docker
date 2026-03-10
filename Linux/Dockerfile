@@ -13,7 +13,7 @@ ENV  CUDA_MAJOR_VERSION="${CUDA_MAJOR_VERSION}"
 # the HPCX UCX/UCC stack bundled in the NGC base image. Keep package install minimal,
 # and force HPCX search order to avoid torch import failures.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    tmux libeigen3-dev libopencv-dev clangd pkg-config libboost-dev libboost-serialization-dev \
+    tmux libeigen3-dev libopencv-dev clangd pkg-config libboost-dev libboost-serialization-dev libboost-all-dev \
     zstd \
     && rm -rf /var/lib/apt/lists/*
 
@@ -63,6 +63,24 @@ RUN  bash /tmp/install_xformers.sh
 # Install Zed SDK
 COPY ./Material/install_zedsdk.sh /tmp/install_zedsdk.sh
 RUN  bash /tmp/install_zedsdk.sh
+
+RUN cd /tmp && \
+  wget https://github.com/borglab/gtsam/archive/refs/tags/4.3a1.tar.gz && \
+  tar zxvf 4.3a1.tar.gz && \
+  cd gtsam-4.3a1 && \
+  pip install -r python/requirements.txt && \
+  mkdir build && \
+  cd build && \
+  cmake .. -DGTSAM_BUILD_PYTHON=1 -DGTSAM_PYTHON_VERSION=3.10.12 -DGTSAM_BUILD_UNSTABLE:OPTION=ON -DCMAKE_BUILD_TYPE=Release -DGTSAM_WITH_TBB=OFF && \
+  make -j$(nproc) && \
+  make python-install
+RUN cd /tmp/gtsam-4.3a1 && \
+  rm -rf build && \
+  mkdir build && \
+  cd build && \
+  cmake .. -DGTSAM_BUILD_UNSTABLE:OPTION=ON -DCMAKE_BUILD_TYPE=Release -DGTSAM_CMAKE_CXX_FLAGS="-march=native" -DGTSAM_WITH_TBB=OFF && \
+  sudo make install && \
+  rm -rf /tmp/gtsam-4.3a1
 
 # Expose rerun visualization ports
 EXPOSE 9876
