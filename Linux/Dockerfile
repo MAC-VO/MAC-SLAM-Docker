@@ -64,23 +64,9 @@ RUN  bash /tmp/install_xformers.sh
 COPY ./Material/install_zedsdk.sh /tmp/install_zedsdk.sh
 RUN  bash /tmp/install_zedsdk.sh
 
-RUN cd /tmp && \
-  wget https://github.com/borglab/gtsam/archive/refs/tags/4.3a1.tar.gz && \
-  tar zxvf 4.3a1.tar.gz && \
-  cd gtsam-4.3a1 && \
-  pip install -r python/requirements.txt && \
-  mkdir build && \
-  cd build && \
-  cmake .. -DGTSAM_BUILD_PYTHON=1 -DGTSAM_PYTHON_VERSION=3.10.12 -DGTSAM_BUILD_UNSTABLE:OPTION=ON -DCMAKE_BUILD_TYPE=Release -DGTSAM_WITH_TBB=OFF && \
-  make -j$(nproc) && \
-  make python-install
-RUN cd /tmp/gtsam-4.3a1 && \
-  rm -rf build && \
-  mkdir build && \
-  cd build && \
-  cmake .. -DGTSAM_BUILD_UNSTABLE:OPTION=ON -DCMAKE_BUILD_TYPE=Release -DGTSAM_CMAKE_CXX_FLAGS="-march=native" -DGTSAM_WITH_TBB=OFF && \
-  sudo make install && \
-  rm -rf /tmp/gtsam-4.3a1
+# Install GT-SAM
+COPY ./Material/install_gtsam.sh /tmp/install_gtsam.sh
+RUN  bash /tmp/install_gtsam.sh
 
 # Expose rerun visualization ports
 EXPOSE 9876
