@@ -13,7 +13,7 @@ ENV  CUDA_MAJOR_VERSION="${CUDA_MAJOR_VERSION}"
 # the HPCX UCX/UCC stack bundled in the NGC base image. Keep package install minimal,
 # and force HPCX search order to avoid torch import failures.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    tmux libeigen3-dev libopencv-dev clangd pkg-config libboost-dev libboost-serialization-dev \
+    tmux libeigen3-dev libopencv-dev clangd pkg-config libboost-dev libboost-serialization-dev libboost-all-dev \
     zstd \
     && rm -rf /var/lib/apt/lists/*
 
@@ -63,6 +63,10 @@ RUN  bash /tmp/install_xformers.sh
 # Install Zed SDK
 COPY ./Material/install_zedsdk.sh /tmp/install_zedsdk.sh
 RUN  bash /tmp/install_zedsdk.sh
+
+# Install GT-SAM
+COPY ./Material/install_gtsam.sh /tmp/install_gtsam.sh
+RUN  bash /tmp/install_gtsam.sh
 
 # Expose rerun visualization ports
 EXPOSE 9876
