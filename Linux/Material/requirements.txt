@@ -2,6 +2,7 @@ evo
 yacs
 timm
 wandb
+psutil
 einops
 pyyaml
 pypose
