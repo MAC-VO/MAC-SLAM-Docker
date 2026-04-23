@@ -1,7 +1,7 @@
 evo
 yacs
 timm
-wandb
+wandb[workspaces]
 psutil
 einops
 pyyaml

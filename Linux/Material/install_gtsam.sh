@@ -12,7 +12,7 @@ cd /tmp && \
   mkdir build && \
   cd build && \
   cmake .. -DGTSAM_BUILD_PYTHON=1 -DGTSAM_PYTHON_VERSION=3.10.12 -DGTSAM_BUILD_UNSTABLE:OPTION=ON -DCMAKE_BUILD_TYPE=Release -DGTSAM_WITH_TBB=OFF && \
-  make -j$(MAX_JOBS) && \
+  make -j"${MAX_JOBS}" && \
   make python-install
 
 cd /tmp/gtsam-4.3a1 && \
