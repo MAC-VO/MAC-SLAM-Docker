@@ -1,6 +1,14 @@
 #!/bin/bash
 set -e
 
+# Map container process to host UID/GID (consumed by `user:` in compose files).
+export HOST_UID="$(id -u)"
+export HOST_GID="$(id -g)"
+
+# Pre-create container HOME on the host so Docker doesn't auto-create it as root.
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+mkdir -p "${REPO_ROOT}/Cache/docker_home"
+
 ARCH=$(uname -m)
 
 if [ "$ARCH" = "x86_64" ]; then

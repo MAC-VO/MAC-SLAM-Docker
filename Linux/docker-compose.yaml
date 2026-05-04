@@ -1,13 +1,17 @@
 # System-level configuration are the same for all develop services
 x-common-config: &common-config
   hostname: ${HOSTNAME:-macslam}-dev
+  # Run as host user so bind-mounted /workspace stays host-owned. HOST_UID/GID exported by compose.sh.
+  user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
   # Mount /dev to give access to all devices including:
-  # - video0/video1: Stereo camera pair  
+  # - video0/video1: Stereo camera pair
   # - hidraw*: ZED IMU/sensors (MCU communicates over USB HID)
   # - bus/usb: USB bus
   volumes:
     - ../../:/workspace
     - /dev:/dev
+    - /etc/passwd:/etc/passwd:ro
+    - /etc/group:/etc/group:ro
   working_dir: /workspace
   deploy:
     resources:
@@ -33,11 +37,16 @@ x-common-config: &common-config
       hard: -1
     stack: 67108864
 
-  # Auxilary environment variables
+  # HOME + PYTHONUSERBASE + PIP_USER: redirect HOME and pip user-site into the
+  # bind-mounted workspace so caches and editable-install metadata persist
+  # across `docker run --rm`.
   environment:
     - NVIDIA_DRIVER_CAPABILITIES=all
     - NVIDIA_VISIBLE_DEVICES=all
     - PYTHONUNBUFFERED=1
+    - HOME=/workspace/Cache/docker_home
+    - PYTHONUSERBASE=/workspace/Cache/docker_home/.local
+    - PIP_USER=1
 
 # Per-resource configuration service.
 services:
@@ -107,9 +116,12 @@ services:
     
     volumes:
       - ../../:/workspace
+      - /dev:/dev
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/group:/etc/group:ro
       - /opt/nvidia/nsight-systems/:/opt/nvidia/nsight-systems/
       - /opt/nvidia/nsight-compute/:/opt/nvidia/nsight-compute/
-  
+
   jetson-orin-dev:
     <<: *common-config
     profiles: ["arm64"]
@@ -132,6 +144,9 @@ services:
     
     volumes:
       - ../../:/workspace
+      - /dev:/dev
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/group:/etc/group:ro
       - /usr/lib/aarch64-linux-gnu/tegra:/usr/lib/aarch64-linux-gnu/tegra
       - /usr/lib/aarch64-linux-gnu/libjpeg.so.8:/usr/lib/aarch64-linux-gnu/libjpeg.so.8
       - /opt/nvidia/nsight-systems/:/opt/nvidia/nsight-systems/

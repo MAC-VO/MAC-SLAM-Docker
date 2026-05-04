@@ -68,6 +68,18 @@ RUN  bash /tmp/install_zedsdk.sh
 COPY ./Material/install_gtsam.sh /tmp/install_gtsam.sh
 RUN  bash /tmp/install_gtsam.sh
 
+# Non-root runtime: sudo NOPASSWD (skip pam_unix shadow lookup since we don't
+# bind-mount /etc/shadow), system-wide git safe.directory, and restore world-
+# read on /usr/local (NGC base ships some site-packages as mode 0600).
+# Kept last so it doesn't bust the xformers/cuDSS/GTSAM cache above.
+RUN apt-get update && apt-get install -y --no-install-recommends sudo \
+    && rm -rf /var/lib/apt/lists/* \
+    && echo "ALL ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/99-macslam-nopasswd \
+    && chmod 0440 /etc/sudoers.d/99-macslam-nopasswd \
+    && sed -i 's/^@include common-account/account required pam_permit.so/' /etc/pam.d/sudo \
+    && git config --system --add safe.directory '*' \
+    && chmod -R go+rX /usr/local
+
 # Expose rerun visualization ports
 EXPOSE 9876
 
