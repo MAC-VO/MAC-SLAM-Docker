@@ -29,6 +29,9 @@ x-common-config: &common-config
     - SYS_ADMIN
   privileged: true
 
+  # Host networking: rerun visualizer (port 9876) is reachable directly, no port mapping needed.
+  network_mode: host
+
   # Sufficient IPC shared memory for PyTorch as instructed in NVIDIA container.
   ipc: host
   ulimits:
@@ -61,10 +64,7 @@ services:
       args:
         BASE_IMAGE: "nvcr.io/nvidia/pytorch:25.03-py3"
         CUDA_MAJOR_VERSION: "12"
-    # Expose network port for rerun visualizer
-    ports:
-      - "9876:9876"
-  
+
   linux-cuda126-dev:
     <<: *common-config
     profiles: ["amd64"]
@@ -76,9 +76,6 @@ services:
       args:
         BASE_IMAGE: "nvcr.io/nvidia/pytorch:24.09-py3"
         CUDA_MAJOR_VERSION: "12"
-    # Expose network port for rerun visualizer
-    ports:
-      - "9876:9876"
 
   linux-cuda130-dev:
     <<: *common-config
@@ -91,9 +88,6 @@ services:
       args:
         BASE_IMAGE: "nvcr.io/nvidia/pytorch:25.08-py3"
         CUDA_MAJOR_VERSION: "13"
-    # Expose network port for rerun visualizer
-    ports:
-      - "9876:9876"
 
   jetson-thor-dev:
     <<: *common-config
@@ -106,14 +100,11 @@ services:
       args:
         BASE_IMAGE: "nvcr.io/nvidia/pytorch:25.08-py3"
         CUDA_MAJOR_VERSION: "13"
-    # Expose network port for rerun visualizer
-    ports:
-      - "9876:9876"
-    
+
     # Load stripped nsys module.
     environment:
       - PATH=/opt/nvidia/nsight-systems/2025.4.1/bin:/opt/nvidia/nsight-compute/2025.3.0/bin:$PATH
-    
+
     volumes:
       - ../../:/workspace
       - /dev:/dev
@@ -133,15 +124,12 @@ services:
       args:
         BASE_IMAGE: "nvcr.io/nvidia/pytorch:25.03-py3-igpu"
         CUDA_MAJOR_VERSION: "12"
-    # Expose network port for rerun visualizer
-    ports:
-      - "9876:9876"
 
     # Fix the libjpeg library problem for PyZed & Load stripped nsys
     environment:
       - PATH=/opt/nvidia/nsight-systems/2024.5.4/bin:/opt/nvidia/nsight-compute/2024.3.1/bin:$PATH
       - LD_LIBRARY_PATH=/usr/lib/aarch64-linux-gnu/tegra:$LD_LIBRARY_PATH
-    
+
     volumes:
       - ../../:/workspace
       - /dev:/dev
@@ -159,6 +147,3 @@ services:
     platform: ${DEV_PLATFORM}
     container_name: macslam-unified-dev
     command: sleep infinity
-    # Expose network port for rerun visualizer
-    ports:
-      - "9876:9876"
