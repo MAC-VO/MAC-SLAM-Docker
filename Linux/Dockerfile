@@ -36,8 +36,8 @@ RUN  pip install --no-cache-dir --upgrade-strategy only-if-needed\
 RUN  pip install uniception==0.1.4 --no-deps
 
 # Unofficial support for Rerun > 0.23 with Numpy < 2.0
-RUN  pip install --no-cache-dir --upgrade-strategy only-if-needed rerun-sdk==0.31.1 --no-deps
-RUN  curl -L https://github.com/rerun-io/rerun/releases/download/0.31.1/rerun_cpp_sdk.zip -o rerun_cpp_sdk.zip && \
+RUN  pip install --no-cache-dir --upgrade-strategy only-if-needed rerun-sdk==0.32.0 --no-deps
+RUN  curl -L https://github.com/rerun-io/rerun/releases/download/0.32.0/rerun_cpp_sdk.zip -o rerun_cpp_sdk.zip && \
     unzip rerun_cpp_sdk.zip -d /usr/local && \
     rm rerun_cpp_sdk.zip
 

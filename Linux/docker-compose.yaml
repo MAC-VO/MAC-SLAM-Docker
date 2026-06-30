@@ -40,16 +40,23 @@ x-common-config: &common-config
       hard: -1
     stack: 67108864
 
-  # HOME + PYTHONUSERBASE + PIP_USER: redirect HOME and pip user-site into the
-  # bind-mounted workspace so caches and editable-install metadata persist
-  # across `docker run --rm`.
+  # Two-site Python layout so a stray `pip install` in the container can't permanently break the env:
+  #   * Casual `pip install`s -> the *ephemeral* user-site at PYTHONUSERBASE=/tmp/pip-user
+  #     (container-local; wiped on `docker compose run --rm`). PIP_USER routes installs there by
+  #     default, so accidents (e.g. pulling numpy>=2) only affect the current session.
+  #   * Compiled/editable features -> the *persistent* feature site at /workspace/Cache/feature_site
+  #     (bind-mounted). Tools/setup.sh installs them there (it overrides PYTHONUSERBASE), and
+  #     Cache/feature_bootstrap/sitecustomize.py (auto-loaded via PYTHONPATH) registers that dir as a
+  #     real site dir so the editable .pth/finder files run. HOME stays on the bind mount so the pip
+  #     wheel cache + shell history persist.
   environment:
     - NVIDIA_DRIVER_CAPABILITIES=all
     - NVIDIA_VISIBLE_DEVICES=all
     - PYTHONUNBUFFERED=1
     - HOME=/workspace/Cache/docker_home
-    - PYTHONUSERBASE=/workspace/Cache/docker_home/.local
+    - PYTHONUSERBASE=/tmp/pip-user
     - PIP_USER=1
+    - PYTHONPATH=/workspace/Cache/feature_bootstrap
 
 # Per-resource configuration service.
 services:
