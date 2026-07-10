@@ -46,7 +46,7 @@ x-common-config: &common-config
   #     default, so accidents (e.g. pulling numpy>=2) only affect the current session.
   #   * Compiled/editable features -> the *persistent* feature site at /workspace/Cache/feature_site
   #     (bind-mounted). Tools/setup.sh installs them there (it overrides PYTHONUSERBASE), and
-  #     Cache/feature_bootstrap/sitecustomize.py (auto-loaded via PYTHONPATH) registers that dir as a
+  #     Tools/feature_bootstrap/sitecustomize.py (auto-loaded via PYTHONPATH) registers that dir as a
   #     real site dir so the editable .pth/finder files run. HOME stays on the bind mount so the pip
   #     wheel cache + shell history persist.
   environment:
@@ -56,7 +56,7 @@ x-common-config: &common-config
     - HOME=/workspace/Cache/docker_home
     - PYTHONUSERBASE=/tmp/pip-user
     - PIP_USER=1
-    - PYTHONPATH=/workspace/Cache/feature_bootstrap
+    - PYTHONPATH=/workspace/Tools/feature_bootstrap
 
 # Per-resource configuration service.
 services:
