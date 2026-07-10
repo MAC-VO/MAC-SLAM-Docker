@@ -56,10 +56,6 @@ RUN  bash /tmp/install_modelopt.sh
 COPY ./Material/install_cudss.sh /tmp/install_cudss.sh
 RUN  bash /tmp/install_cudss.sh
 
-# Install xformers (build from source)
-COPY ./Material/install_xformers.sh /tmp/install_xformers.sh
-RUN  bash /tmp/install_xformers.sh
-
 # Install Zed SDK
 COPY ./Material/install_zedsdk.sh /tmp/install_zedsdk.sh
 RUN  bash /tmp/install_zedsdk.sh
@@ -71,7 +67,7 @@ RUN  bash /tmp/install_gtsam.sh
 # Non-root runtime: sudo NOPASSWD (skip pam_unix shadow lookup since we don't
 # bind-mount /etc/shadow), system-wide git safe.directory, and restore world-
 # read on /usr/local (NGC base ships some site-packages as mode 0600).
-# Kept last so it doesn't bust the xformers/cuDSS/GTSAM cache above.
+# Kept last so it doesn't bust the cuDSS/GTSAM cache above.
 RUN apt-get update && apt-get install -y --no-install-recommends sudo \
     && rm -rf /var/lib/apt/lists/* \
     && echo "ALL ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/99-macslam-nopasswd \

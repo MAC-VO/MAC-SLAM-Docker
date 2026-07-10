@@ -26,6 +26,7 @@ onnxconverter-common
 onnx-graphsurgeon
 onnxslim
 
-# Build dependencies for xFormers
+# Build dependencies for source-compiled CUDA extensions
+# (Sparse BA, DPVO/DROID/DPV-SLAM baselines) built with --no-build-isolation
 ninja
 packaging

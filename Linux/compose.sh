@@ -32,8 +32,8 @@ SKIP_BUILD_SERVICES=" dev-unified-entry "
 if [ "${1:-}" = "build" ]; then
     # Serialize image builds. `docker compose build` with buildx-bake (default
     # in Compose v2.22+) builds every service in a compose file in parallel.
-    # Each service here does heavy CUDA source compilation (xformers, GTSAM,
-    # cuDSS) against a ~20GB NGC PyTorch base, so parallel builds exhaust host
+    # Each service here does heavy CUDA source compilation (GTSAM, cuDSS)
+    # against a ~20GB NGC PyTorch base, so parallel builds exhaust host
     # RAM and freeze the machine. We both disable bake and iterate services
     # one at a time across all compose files.
     shift
