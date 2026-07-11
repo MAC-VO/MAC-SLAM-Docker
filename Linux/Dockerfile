@@ -52,7 +52,7 @@ RUN  bash /tmp/install_cv2.sh
 COPY ./Material/install_modelopt.sh /tmp/install_modelopt.sh
 RUN  bash /tmp/install_modelopt.sh
 
-# Install CUDSS (For accelerated Sparse BA)
+# Install cuDSS 0.8 + nvmath-python
 COPY ./Material/install_cudss.sh /tmp/install_cudss.sh
 RUN  bash /tmp/install_cudss.sh
 
@@ -68,13 +68,16 @@ RUN  bash /tmp/install_gtsam.sh
 # bind-mount /etc/shadow), system-wide git safe.directory, and restore world-
 # read on /usr/local (NGC base ships some site-packages as mode 0600).
 # Kept last so it doesn't bust the cuDSS/GTSAM cache above.
+# chmod only the inodes that lack go+rX (find-filter) -- a bare `chmod -R`
+# rewrites every inode's ctime and copies all of /usr/local up into this layer.
 RUN apt-get update && apt-get install -y --no-install-recommends sudo \
     && rm -rf /var/lib/apt/lists/* \
     && echo "ALL ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/99-macslam-nopasswd \
     && chmod 0440 /etc/sudoers.d/99-macslam-nopasswd \
     && sed -i 's/^@include common-account/account required pam_permit.so/' /etc/pam.d/sudo \
     && git config --system --add safe.directory '*' \
-    && chmod -R go+rX /usr/local
+    && find /usr/local -type f ! -perm -044 -exec chmod go+r  {} + \
+    && find /usr/local -type d ! -perm -055 -exec chmod go+rx {} +
 
 # Expose rerun visualization ports
 EXPOSE 9876

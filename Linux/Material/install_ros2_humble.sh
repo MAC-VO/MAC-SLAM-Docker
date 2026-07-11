@@ -52,7 +52,22 @@ install_source() {
 
     rosinstall_generator ros_base --rosdistro humble --deps --tar \
         > /tmp/ros2_humble.repos
-    vcs import src < /tmp/ros2_humble.repos
+
+    # vcs import fans out ~250 GitHub tarball downloads; bursts trip GitHub's rate
+    # limiter and individual reads time out. Cap workers and retry -- --skip-existing
+    # re-fetches only the repos that failed, so it converges instead of restarting.
+    for attempt in 1 2 3 4 5; do
+        if vcs import --workers 8 --retry 3 --skip-existing \
+                src < /tmp/ros2_humble.repos; then
+            break
+        fi
+        if [ "${attempt}" -eq 5 ]; then
+            echo "!!! vcs import failed after 5 attempts" >&2
+            exit 1
+        fi
+        echo ">>> vcs import attempt ${attempt} timed out; retrying in 15s..." >&2
+        sleep 15
+    done
 
     rosdep install --from-paths src --ignore-src -y \
         --skip-keys "${ROSDEP_SKIP_KEYS[*]}"
