@@ -6,22 +6,23 @@ FROM ${BASE_IMAGE} AS base
 
 WORKDIR /export
 
-# The Magic Script:
-# 1. Finds the site-packages directory (adjust python version if needed)
-# 2. Uses 'find' to locate ONLY .py and .pyi files
-# 3. Uses 'cp --parents' to copy them while preserving the folder structure
-# We exclude '__pycache__' to save space.
-# UPDATED FIND COMMAND:
-# 1. Added .pth (Path configuration files)
-# 2. Added .json (Often needed for library configs)
-# 3. Added _rotation.*.so (for scipy.spatial.transform.Rotation, which does not provide pyi stub file.)
-# 4. Added dist-info (Contains metadata that Pyright sometimes checks)
+# Build a lightweight type-stub skeleton of site-packages for Pyright:
+#   1. Copy the real typed sources verbatim — .py / .pyi (types), plus .pth (namespace
+#      packages) and .json (library configs) — preserving the folder structure.
+#   2. Materialize every compiled extension (.so) as a ZERO-BYTE placeholder. Pyright never
+#      reads the binary; it only needs the module file to exist so a package-level re-export
+#      backed by a native/Cython module resolves instead of erroring with "unknown import
+#      symbol" (e.g. scipy.sparse.csgraph -> reverse_cuthill_mckee, scipy.spatial.transform
+#      -> Rotation). Empty placeholders keep the image small while covering every native API.
+# '__pycache__' is excluded throughout.
 RUN SITE_PACKAGES=$(python -c "import site; print(site.getsitepackages()[0])") && \
-    mkdir -p ./site-packages && \
+    mkdir -p /export/site-packages && \
     cd "$SITE_PACKAGES" && \
-    find . -type f \( -name "*.py" -o -name "*.pyi" -o -name "*.pth" -o -name "*.json" -o -name "_rotation.*.so" \) \
-    -not -path "*/__pycache__/*" \
-    -exec cp --parents "{}" /export/site-packages/ \;
+    find . -type f \( -name "*.py" -o -name "*.pyi" -o -name "*.pth" -o -name "*.json" \) \
+        -not -path "*/__pycache__/*" \
+        -exec cp --parents "{}" /export/site-packages/ \; && \
+    find . -type f -name "*.so" -not -path "*/__pycache__/*" -printf '%P\0' | \
+        xargs -0 -I{} sh -c 'p="$1"; mkdir -p "/export/site-packages/$(dirname "$p")" && : > "/export/site-packages/$p"' _ {}
 
     
 # STAGE 2: The Lightweight CI Runner
